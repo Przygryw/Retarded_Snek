@@ -183,6 +183,100 @@ void generatePoint()
 
     arena[pointX][pointY] = 'o';
 }
+
+
+void FileOperation(int scoreGained)
+{    
+    printf("\n");
+    FILE *f1;
+    char names[5][5], score[5];
+    f1 = fopen("HiScore.hs", "r");
+    char errorCheck = 0;
+    char wholeFile[47];
+    char tmp;
+    do
+    {
+        tmp = fgetc(f1);
+        wholeFile[errorCheck] = tmp;
+        errorCheck++;
+    }while(tmp != EOF);
+    while(errorCheck < 10) {printf("Error while reading the file\n");}
+    //printf("%s", wholeFile);
+    char unID = 0, charID = 0, uID = 0;
+    char status = 'e';
+    int power = 1;
+    char s = 0;
+    while(unID < errorCheck)
+    {
+        if(wholeFile[unID] == '.') {status = 'u'; unID++;}
+        else if (wholeFile[unID] == ',') {status = 's'; unID++;}
+
+        if(status == 'u') names[uID][charID++] = wholeFile[unID]; 
+        else if(status == 's') {s += (char)(pow(10,power--)*(wholeFile[unID]-48));}
+        if(charID == 5 && power < 0) {charID = 0; score[uID] = s;  uID++; power = 1; s = 0; printf("\n");}
+        unID++;
+    }
+    printf("\n");
+    /*
+    for(int i = 0; i < 5; i++)
+    {
+        for(int j = 0; j < 5; j++)
+        {
+            printf("%c",names[i][j]);
+        }printf("| %i", score[i]);printf("\n"); 
+    }*/
+    //CHECK SCORES
+    status = 10;
+    unID = 4;
+    while(status == 10 || unID >= 0)
+    {
+        if(scoreGained > score[unID]) status = unID;
+        unID --;
+    }
+
+    if(status != 10 && status >=0)
+    {
+                //OVERWRITE REST
+        for(int i = 4; i > status; i--)
+        {
+            score[i] = score[i-1];
+        }
+        score[status] = scoreGained;
+        char userName[5];
+        do
+        {
+            printf("\nEnter player name (5 characters): ");
+            scanf("%s", &userName);
+        } while (strlen(userName) != 5);
+        for(int i = 0; i < 5; i++) names[status][i] = userName[i];
+
+        
+    }
+    else printf("\nNo record, try again!");
+    //printf("Status: %i\n", status);
+
+    //SAVE TO FILE
+    f1 = fopen("HiScore.hs", "w");
+    for(int i =0; i < 5; i++)
+    {
+        fprintf(f1,".");
+        for(int j =0; j < 5; j++) fprintf(f1,"%c", names[i][j]);
+        fprintf(f1,",");
+        if(score[i] < 10) fprintf(f1,"0%i", score[i]);
+        else fprintf(f1,"%i", score[i]);
+    }
+    fprintf(f1,"|\0");
+
+    printf("\nCurrent top Scores:\n");
+    for(int i = 0; i < 5; i++)
+    {
+        for(int j = 0; j < 5; j++)
+        {
+            printf("%c",names[i][j]);
+        }printf("| %i", score[i]);printf("\n"); 
+    }
+}
+
 int main()
 {
     srand(time(NULL));
@@ -214,5 +308,11 @@ int main()
         Pmovement = movement; 
     }
     printf("You lost!\n Points: %i", length-1);
+    FileOperation(length-1);
+    getchar();
+    getchar();
+    getchar();
+    getchar();
+    getchar();
     getchar();
 }
