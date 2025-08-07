@@ -7,4 +7,5 @@ Game automatically generates obstacles.
 
 To fix:
 Parts of snake dissapear, while going in some directions
+
 Scoreboard bug
